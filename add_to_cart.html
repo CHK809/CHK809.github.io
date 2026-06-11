@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加入購物車 - BookSeller's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Inter:wght@300;500;700&family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #eaeef1;
+            --card-bg: #ffffff;
+            --accent-color: #2d7c19;
+            --text-dim: #666666;
+            --tech-border: rgba(0, 0, 0, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-color);
+            color: #333333;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+
+        /* ── 狀態卡片 ── */
+        .status-card {
+            background: var(--card-bg);
+            border: 1px solid var(--tech-border);
+            border-radius: 8px;
+            padding: 50px 60px;
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            animation: fadeSlideIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .status-icon.success { color: #2d7c19; }
+        .status-icon.error   { color: #d32f2f; }
+
+        .status-title {
+            font-family: 'Lora', serif;
+            font-size: 1.3rem; font-weight: bold;
+            color: var(--accent-color);
+            letter-spacing: 1px; margin-bottom: 10px;
+        }
+        .status-msg {
+            color: var(--text-dim);
+            font-size: 0.95rem; line-height: 1.7;
+            margin-bottom: 24px;
+        }
+        .prod-info {
+            background: rgba(45, 124, 25, 0.03);
+            border: 1px solid var(--tech-border);
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+        .prod-info p { margin: 5px 0; font-size: 0.88rem; color: #555555; }
+        .prod-info span { color: #333333; font-weight: 600; }
+
+        .progress-bar-wrap {
+            background: #e0e0e0;
+            border-radius: 4px;
+            height: 5px;
+            margin-bottom: 28px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d7c19, #A3D1D1);
+            width: 0%;
+            transition: width 1.2s ease;
+            border-radius: 4px;
+        }
+
+        .btn-goto-cart {
+            display: inline-block;
+            background: var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            padding: 13px 30px;
+            border-radius: 4px;
+            font-family: 'Lora', serif;
+            font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 1px;
+            transition: background 0.25s, transform 0.2s;
+            margin: 4px;
+        }
+        .btn-goto-cart:hover { background: #1e5210; transform: scale(1.03); color: #fff; }
+
+        .btn-keep-shopping {
+            display: inline-block;
+            background: transparent;
+            color: #666;
+            text-decoration: none;
+            padding: 13px 30px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-family: 'Lora', serif;
+            font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+            margin: 4px;
+        }
+        .btn-keep-shopping:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+        /* ── 表格式說明區 ── */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.85rem;
+        }
+        .info-table th {
+            background: rgba(0,0,0,0.03);
+            color: #555;
+            text-align: left;
+            padding: 8px 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.75rem;
+        }
+        .info-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--tech-border);
+            color: #333;
+            text-align: left;
+        }
+        .info-table tr:last-child td { border-bottom: none; }
+        .money { color: #d32f2f; font-weight: 700; }
+
+        /* 說明標題 */
+        .section-title {
+            font-family: 'Lora', serif;
+            font-size: 0.8rem; letter-spacing: 1px;
+            color: #888; text-transform: uppercase;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="status-card" id="status-card">
+        <!-- 動態填入 -->
+        <i class="fa-solid fa-circle-notch fa-spin status-icon" style="color:#888;"></i>
+        <div class="status-title">處理中...</div>
+        <div class="status-msg">正在新增商品至購物車，請稍候。</div>
+    </div>
+
+    <script>
+        /* ===== 商品資料庫 ===== */
+        const productsDB = {
+            "shoe_casual_01": { name: "解憂雜貨店", price: 320, img: "pic/sandwich/1.jpg" },
+            "shoe_casual_02": { name: "小王子", price: 250, img: "pic/sandwich/2.jpg" },
+            "shoe_casual_03": { name: "追風箏的人", price: 350, img: "pic/sandwich/3.jpg" },
+            "shoe_casual_04": { name: "擺渡人", price: 280, img: "pic/sandwich/4.jpg" },
+            "shoe_sport_01": { name: "房思琪的初戀樂園", price: 330, img: "pic/sandwich/5.jpg" },
+            "shoe_sport_02": { name: "我們仨", price: 260, img: "pic/sandwich/6.jpg" },
+            "shoe_sport_03": { name: "活著", price: 300, img: "pic/sandwich/7.jpg" },
+            "shoe_sport_04": { name: "百年孤寂", price: 420, img: "pic/sandwich/8.jpg" },
+            "shoe_high_01": { name: "人間失格", price: 270, img: "pic/sandwich/9.jpg" },
+            "shoe_high_02": { name: "嫌疑人X的獻身", price: 340, img: "pic/sandwich/10.jpg" },
+            "shoe_high_03": { name: "島上書店", price: 310, img: "pic/sandwich/11.jpg" },
+            "shoe_high_04": { name: "目送", price: 290, img: "pic/sandwich/12.jpg" }
+        };
+
+        /* ===== 讀取 URL 參數 ===== */
+        const params  = new URLSearchParams(window.location.search);
+        const itemId  = params.get('id')    || '';
+        const qty     = parseInt(params.get('qty') || '1');
+        const size    = params.get('size')  || '平裝版';
+        const color   = params.get('color') || '無書套';
+
+        /* ===== 執行新增購物車 ===== */
+        function addToCart() {
+            const card = document.getElementById('status-card');
+
+            // 驗證商品
+            if (!itemId || !productsDB[itemId]) {
+                card.innerHTML = `
+                    <i class="fa-solid fa-circle-xmark status-icon error"></i>
+                    <div class="status-title">商品不存在</div>
+                    <div class="status-msg">找不到指定商品（ID: ${itemId || '未提供'}），請返回首頁重新選購。</div>
+                    <a href="index.html" class="btn-goto-cart"><i class="fa-solid fa-home me-2"></i>返回首頁</a>`;
+                return;
+            }
+
+            const p = productsDB[itemId];
+            const validQty = (isNaN(qty) || qty < 1) ? 1 : qty;
+
+            // 讀取並更新購物車
+            let cart = JSON.parse(localStorage.getItem('nike_cart')) || [];
+            const existingIndex = cart.findIndex(
+                item => item.id === itemId && item.size === size && item.color === color
+            );
+
+            let isNew = false;
+            if (existingIndex > -1) {
+                cart[existingIndex].qty += validQty;
+            } else {
+                cart.push({ id: itemId, qty: validQty, size: size, color: color });
+                isNew = true;
+            }
+            localStorage.setItem('nike_cart', JSON.stringify(cart));
+
+            const itemTotal = p.price * validQty;
+            const actionText = isNew ? '已加入購物車' : '數量已累加';
+
+            // 顯示成功畫面
+            card.innerHTML = `
+                <i class="fa-solid fa-circle-check status-icon success"></i>
+                <div class="status-title">${actionText}！</div>
+                <div class="status-msg">商品已成功新增至您的購物車。</div>
+
+                <div class="section-title"><i class="fa-solid fa-box me-1"></i>商品資訊</div>
+                <table class="info-table">
+                    <thead>
+                        <tr>
+                            <th>書名</th>
+                            <th>選購版本</th>
+                            <th>加購書套</th>
+                            <th>數量</th>
+                            <th>小計</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${p.name}</td>
+                            <td>${size}</td>
+                            <td>${color}</td>
+                            <td>${validQty}</td>
+                            <td class="money">NT$ ${itemTotal.toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="prog-bar"></div>
+                </div>
+
+                <a href="cart.html" class="btn-goto-cart">
+                    <i class="fa-solid fa-cart-shopping me-2"></i>前往購物車（共 ${cart.length} 項）
+                </a>
+                <a href="index.html" class="btn-keep-shopping">
+                    <i class="fa-solid fa-arrow-left me-2"></i>繼續選購
+                </a>`;
+
+            // 進度條動畫後自動跳轉
+            setTimeout(() => {
+                const bar = document.getElementById('prog-bar');
+                if (bar) bar.style.width = '100%';
+            }, 100);
+
+            setTimeout(() => {
+                window.location.href = 'cart.html';
+            }, 1400);
+        }
+
+        // 稍微延遲執行，讓 loading 動畫看起來更真實
+        setTimeout(addToCart, 400);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

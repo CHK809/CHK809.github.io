@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新購物車 - BookSeller's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Inter:wght@300;500;700&family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #eaeef1;
+            --card-bg: #ffffff;
+            --accent-color: #2d7c19;
+            --text-dim: #666666;
+            --tech-border: rgba(0, 0, 0, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-color);
+            color: #333333;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+
+        /* ── 狀態卡片 ── */
+        .status-card {
+            background: var(--card-bg);
+            border: 1px solid var(--tech-border);
+            border-radius: 8px;
+            padding: 50px 60px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            animation: fadeSlideIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .status-icon.success { color: #2d7c19; }
+        .status-icon.error   { color: #d32f2f; }
+
+        .status-title {
+            font-family: 'Lora', serif;
+            font-size: 1.3rem; font-weight: bold;
+            color: var(--accent-color);
+            letter-spacing: 1px; margin-bottom: 10px;
+        }
+        .status-msg {
+            color: var(--text-dim);
+            font-size: 0.95rem; line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        /* ── 前後對比表格 ── */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0 26px;
+            font-size: 0.85rem;
+        }
+        .compare-table th {
+            background: rgba(0,0,0,0.03);
+            color: #555;
+            padding: 9px 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.75rem;
+        }
+        .compare-table td {
+            padding: 11px 16px;
+            border-bottom: 1px solid var(--tech-border);
+            color: #333;
+        }
+        .compare-table tr:last-child td { border-bottom: none; }
+        .old-val { color: #888; text-decoration: line-through; }
+        .new-val { color: #2d7c19; font-weight: 700; }
+        .money   { color: #d32f2f; font-weight: 700; }
+
+        .section-title {
+            font-family: 'Lora', serif;
+            font-size: 0.78rem; letter-spacing: 1px;
+            color: #888; text-transform: uppercase;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        /* ── 進度條 ── */
+        .progress-bar-wrap {
+            background: #e0e0e0;
+            border-radius: 4px;
+            height: 5px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2d7c19, #A3D1D1);
+            width: 0%;
+            transition: width 1.2s ease;
+            border-radius: 4px;
+        }
+
+        /* ── 按鈕 ── */
+        .btn02 {
+            display: inline-block;
+            background-color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-family: 'Lora', serif;
+            font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 1px;
+            transition: background 0.25s, transform 0.2s;
+            cursor: pointer;
+            margin: 4px;
+        }
+        .btn02:hover { background-color: #1e5210; border-color: #1e5210; color: #fff; transform: scale(1.03); }
+
+        .btn-secondary-link {
+            display: inline-block;
+            background: transparent;
+            color: #666;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-family: 'Lora', serif;
+            font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+            margin: 4px;
+        }
+        .btn-secondary-link:hover { border-color: var(--accent-color); color: var(--accent-color); }
+    </style>
+</head>
+<body>
+
+    <div class="status-card" id="status-card">
+        <i class="fa-solid fa-circle-notch fa-spin status-icon" style="color:#888;"></i>
+        <div class="status-title">更新中...</div>
+        <div class="status-msg">正在更新購物車商品數量，請稍候。</div>
+    </div>
+
+    <script>
+        /* ===== 商品資料庫 ===== */
+        const productsDB = {
+            "shoe_casual_01": { name: "解憂雜貨店", price: 320, img: "pic/sandwich/1.jpg" },
+            "shoe_casual_02": { name: "小王子", price: 250, img: "pic/sandwich/2.jpg" },
+            "shoe_casual_03": { name: "追風箏的人", price: 350, img: "pic/sandwich/3.jpg" },
+            "shoe_casual_04": { name: "擺渡人", price: 280, img: "pic/sandwich/4.jpg" },
+            "shoe_sport_01": { name: "房思琪的初戀樂園", price: 330, img: "pic/sandwich/5.jpg" },
+            "shoe_sport_02": { name: "我們仨", price: 260, img: "pic/sandwich/6.jpg" },
+            "shoe_sport_03": { name: "活著", price: 300, img: "pic/sandwich/7.jpg" },
+            "shoe_sport_04": { name: "百年孤寂", price: 420, img: "pic/sandwich/8.jpg" },
+            "shoe_high_01": { name: "人間失格", price: 270, img: "pic/sandwich/9.jpg" },
+            "shoe_high_02": { name: "嫌疑人X的獻身", price: 340, img: "pic/sandwich/10.jpg" },
+            "shoe_high_03": { name: "島上書店", price: 310, img: "pic/sandwich/11.jpg" },
+            "shoe_high_04": { name: "目送", price: 290, img: "pic/sandwich/12.jpg" }
+        };
+
+        /* ===== 讀取 URL 參數 ===== */
+        const params   = new URLSearchParams(window.location.search);
+        const indexStr = params.get('index');  // 購物車陣列索引
+        const itemId   = params.get('id')    || '';
+        const newQtyStr = params.get('qty')  || '1';
+
+        /* ===== 執行更新 ===== */
+        function updateCart() {
+            const card   = document.getElementById('status-card');
+            let cart     = JSON.parse(localStorage.getItem('nike_cart')) || [];
+            let targetIndex = -1;
+
+            // 優先用 index 參數定位，否則用 id 找第一筆
+            if (indexStr !== null && !isNaN(parseInt(indexStr))) {
+                targetIndex = parseInt(indexStr);
+            } else if (itemId) {
+                targetIndex = cart.findIndex(item => item.id === itemId);
+            }
+
+            // 驗證
+            if (targetIndex < 0 || targetIndex >= cart.length) {
+                card.innerHTML = `
+                    <i class="fa-solid fa-circle-xmark status-icon error"></i>
+                    <div class="status-title">找不到該商品</div>
+                    <div class="status-msg">購物車中找不到指定商品，可能已被移除。</div>
+                    <a href="cart.html" class="btn02"><i class="fa-solid fa-cart-shopping me-2"></i>返回購物車</a>`;
+                return;
+            }
+
+            const item    = cart[targetIndex];
+            const p       = productsDB[item.id] || { name: '未知商品', price: 0 };
+            const oldQty  = item.qty;
+            const newQty  = Math.max(1, parseInt(newQtyStr) || 1);
+
+            if (oldQty === newQty) {
+                // 數量沒變
+                card.innerHTML = `
+                    <i class="fa-solid fa-circle-info status-icon" style="color:#f39c12;"></i>
+                    <div class="status-title">數量未改變</div>
+                    <div class="status-msg">商品數量與原來相同（${oldQty} 件），無需更新。</div>
+                    <a href="cart.html" class="btn02"><i class="fa-solid fa-cart-shopping me-2"></i>返回購物車</a>`;
+                setTimeout(() => { window.location.href = 'cart.html'; }, 1200);
+                return;
+            }
+
+            // 執行更新
+            cart[targetIndex].qty = newQty;
+            localStorage.setItem('nike_cart', JSON.stringify(cart));
+
+            const oldTotal = p.price * oldQty;
+            const newTotal = p.price * newQty;
+
+            card.innerHTML = `
+                <i class="fa-solid fa-rotate status-icon success"></i>
+                <div class="status-title">數量已更新！</div>
+                <div class="status-msg">購物車商品數量已成功修改。</div>
+
+                <div class="section-title"><i class="fa-solid fa-arrow-right-arrow-left me-1"></i>更新明細</div>
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>商品名稱</th>
+                            <th>舊數量</th>
+                            <th>新數量</th>
+                            <th>舊小計</th>
+                            <th>新小計</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${p.name}<br><small style="color:#888;">${item.size || ''} ${item.color ? '/ '+item.color : ''}</small></td>
+                            <td><span class="old-val">${oldQty}</span></td>
+                            <td><span class="new-val">${newQty}</span></td>
+                            <td><span class="old-val">NT$ ${oldTotal.toLocaleString()}</span></td>
+                            <td class="money">NT$ ${newTotal.toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-fill" id="prog-bar"></div>
+                </div>
+
+                <a href="cart.html" class="btn02">
+                    <i class="fa-solid fa-cart-shopping me-2"></i>返回購物車
+                </a>
+                <a href="index.html" class="btn-secondary-link">
+                    <i class="fa-solid fa-arrow-left me-2"></i>繼續選購
+                </a>`;
+
+            setTimeout(() => {
+                const bar = document.getElementById('prog-bar');
+                if (bar) bar.style.width = '100%';
+            }, 100);
+
+            setTimeout(() => { window.location.href = 'cart.html'; }, 1400);
+        }
+
+        setTimeout(updateCart, 400);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品介紹 - NIKE TECH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #eaeef1;
+            --card-bg: #ffffff;
+            --accent-color: #2d7c19;
+            --text-main: #333333;
+            --text-dim: #666666;
+            --nav-bg: #bcd8de;
+            --nav-text: #2d7c19;
+            --nav-hover-bg: #A3D1D1;
+            --nav-hover-text: #ff0000;
+            --brand-text-color: #287418;
+            --tech-border: rgba(0, 0, 0, 0.08);
+            --tech-blue: #2d7c19;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        .navbar { background: var(--nav-bg); padding: 10px 40px; border-bottom: 1px solid var(--tech-border); position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .navbar-container { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto; }
+        .navbar-logo { display: flex; align-items: center; font-family: 'Lora', serif; font-size: 1.6rem; font-weight: 900; color: var(--brand-text-color) !important; text-decoration: none; letter-spacing: 1px; }
+        .navbar-logo .logo { width: 45px; height: auto; margin-right: 12px; border-radius: 50%; }
+        .navbar-menu { display: flex; list-style: none; gap: 15px; align-items: center; margin: 0; padding: 0; }
+        .navbar-menu a { text-decoration: none; color: var(--nav-text) !important; font-weight: bold; transition: all 0.25s ease; font-size: 0.92rem; padding: 8px 12px; border-radius: 4px; display: flex; align-items: center; gap: 6px; }
+        .navbar-menu a:hover { color: var(--nav-hover-text) !important; background-color: var(--nav-hover-bg); }
+        .navbar-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--nav-text); }
+
+        .product-page-wrapper { flex: 1; padding: 5rem 2rem; display: flex; justify-content: center; align-items: center; }
+        .product-detail-container { 
+            background: var(--card-bg); max-width: 1200px; width: 100%; border: 1px solid var(--tech-border);
+            display: flex; overflow: hidden; position: relative; border-radius: 8px; box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+        }
+        .breadcrumb { position: absolute; top: 30px; left: 40px; font-size: 0.8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .breadcrumb a { color: var(--accent-color); text-decoration: none; font-weight: bold; }
+        
+        .image-section { flex: 1.2; background: #fafafa; padding: 5rem; display: flex; justify-content: center; align-items: center; border-right: 1px solid var(--tech-border); }
+        .image-section img { max-height: 400px; max-width: 90%; height: auto; width: auto; object-fit: contain; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .image-section img:hover { transform: scale(1.05) rotate(-2deg); }
+
+        .info-section { flex: 1; padding: 5rem 4rem; display: flex; flex-direction: column; justify-content: center; }
+        .badge { display: inline-block; background: var(--accent-color); color: white; padding: 6px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-bottom: 20px; letter-spacing: 1px; text-transform: uppercase; align-self: flex-start; }
+        .pd-title { font-family: 'Lora', serif; font-size: 2.2rem; color: var(--text-main); font-weight: 700; margin-bottom: 20px; letter-spacing: 0.5px; }
+        .pd-desc { font-size: 0.95rem; color: var(--text-dim); line-height: 1.8; margin-bottom: 30px; }
+        .pd-price { font-size: 2rem; font-weight: 700; color: #d32f2f; margin-bottom: 40px; }
+        
+        .option-group { margin-bottom: 30px; }
+        .option-title { font-weight: 700; color: var(--text-main); margin-bottom: 15px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .pill-container { display: flex; flex-wrap: wrap; gap: 12px; }
+        .pill { padding: 8px 18px; border: 1px solid #cccccc; color: var(--text-dim); font-size: 0.85rem; font-weight: 700; cursor: pointer; transition: all 0.25s ease; border-radius: 4px; background: #ffffff; }
+        .pill:hover { border-color: var(--accent-color); color: var(--accent-color); }
+        .pill.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
+
+        .qty-container { display: flex; align-items: center; gap: 15px; }
+        .qty-btn { background: #eaeaea; color: #333333; border: none; width: 40px; height: 40px; font-size: 1.1rem; cursor: pointer; transition: 0.25s; display: flex; justify-content: center; align-items: center; border-radius: 4px; }
+        .qty-btn:hover { background: var(--accent-color); color: white; }
+        .qty-input { width: 60px; height: 40px; text-align: center; border: 1px solid #cccccc; background: transparent; font-size: 1.1rem; font-weight: 700; color: var(--text-main); outline: none; border-radius: 4px; }
+
+        .btn-add-cart { background: var(--accent-color); color: white; border: none; padding: 16px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.25s ease; margin-top: 30px; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 12px; border-radius: 4px; }
+        .btn-add-cart:hover { background: #1e5210; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(45,124,25,0.2); }
+
+        @media (max-width: 900px) {
+            .navbar { padding: 10px 20px; }
+            .navbar-menu { 
+                display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; 
+                background: #ffffff; padding: 20px; width: 100%;
+                border-bottom: 1px solid var(--tech-border);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            }
+            .navbar-menu.active { display: flex; }
+            .navbar-menu li { width: 100%; text-align: center; }
+            .navbar-menu a { display: block; padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+            .navbar-toggle { display: block; background: none; border: none; color: var(--nav-text); font-size: 1.5rem; cursor: pointer; }
+            
+            .product-page-wrapper { padding: 2rem 1rem; }
+            .product-detail-container { flex-direction: column; }
+            .image-section { padding: 3rem 2rem; border-right: none; border-bottom: 1px solid var(--tech-border); } .image-section img { max-width: 70%; }
+            .info-section { padding: 3rem 2rem; } 
+            .pd-title { font-size: 1.8rem; }
+            .breadcrumb { position: relative; top: 0; left: 0; margin-bottom: 20px; }
+            .footer { padding: 2.5rem 1.5rem; grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+            .social-links { justify-content: center; }
+        }
+
+        .footer { background: #ffffff; padding: 4rem 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; border-top: 1px solid var(--tech-border); color: #555; box-shadow: 0 -2px 10px rgba(0,0,0,0.02); }
+        .footer-section { display: flex; flex-direction: column; gap: 1.2rem; }
+        .footer-section h3 { font-family: 'Lora', serif; color: var(--accent-color); font-size: 1.1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-section p, .footer-section ul li { color: #666; font-size: 0.88rem; line-height: 1.8; margin: 0; }
+        .footer-section ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+        .footer-section ul li a { text-decoration: none; color: inherit; transition: all 0.25s ease; }
+        .footer-section ul li a:hover { color: var(--accent-color); padding-left: 5px; }
+        .social-links { display: flex; gap: 1.2rem; margin-top: 0.5rem; }
+        .social-links a { text-decoration: none; color: #777; font-size: 1.2rem; transition: all 0.25s ease; }
+        .social-links a:hover { color: var(--accent-color); transform: translateY(-3px); }
+
+        /* ── Stock / 待售數量 Badge ── */
+        .stock-badge {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 28px;
+            letter-spacing: 0.5px;
+            background: rgba(45, 124, 25, 0.06);
+            color: var(--accent-color);
+            border: 1px solid rgba(45, 124, 25, 0.25);
+            transition: all 0.3s;
+            align-self: flex-start;
+        }
+        .stock-badge.low {
+            background: rgba(251, 146, 60, 0.1);
+            color: #fb923c;
+            border-color: rgba(251, 146, 60, 0.35);
+            animation: pulseStock 2s ease-in-out infinite;
+        }
+        .stock-badge.out {
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border-color: rgba(244, 63, 94, 0.35);
+        }
+        @keyframes pulseStock {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0); }
+            50% { box-shadow: 0 0 8px 2px rgba(251, 146, 60, 0.25); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="./pic/logo.png" alt="BookSeller's" class="logo">
+                <span class="brand-text" style="font-family: 'Lora', serif; font-weight: bold; margin-left: 5px;">BookSeller's</span>
+            </a>
+            <button class="navbar-toggle" id="navbarToggle">☰</button>
+            <ul class="navbar-menu" id="navbarMenu">
+                <li><a href="index.html#casual"><i class="fa-solid fa-book"></i> 本周暢銷</a></li>
+                <li><a href="index.html#sport"><i class="fa-solid fa-brain"></i> 心理學熱賣</a></li>
+                <li><a href="index.html#high"><i class="fa-solid fa-wand-magic-sparkles"></i> 館長熱推</a></li>
+                <li><a href="leaderboard.html"><i class="fa-solid fa-ranking-star"></i> 排行榜</a></li>
+                <li><a href="cart.html"><i class="fa-solid fa-cart-shopping"></i> 購物車</a></li>
+                <li id="nav-order" style="display:none;"><a href="orders.html"><i class="fa-solid fa-receipt"></i> 我的訂單</a></li>
+                <li id="nav-login"><a href="login.html"><i class="fa-solid fa-user-gear"></i> 登入/註冊</a></li>
+                <li id="nav-user" style="display:none;"><a href="#" id="user-display" style="color:var(--accent-color); font-weight:bold;"></a></li>
+                <li id="nav-logout" style="display:none;"><a href="#" id="btn-logout" style="color:#ff3b30;">登出</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="product-page-wrapper">
+        <div class="product-detail-container">
+            <div class="breadcrumb"><a href="index.html">首頁</a> > <span style="color:var(--accent-color);">書籍詳情</span></div>
+            
+            <div class="image-section">
+                <img id="pd-image" src="" alt="書籍封面">
+            </div>
+            
+            <div class="info-section">
+                <div id="pd-badge" class="badge">精選推薦</div>
+                <h1 class="pd-title" id="pd-name">載入中...</h1>
+                <p class="pd-desc" id="pd-desc">書籍描述載入中，請稍候...</p>
+                <div class="pd-price" id="pd-price">NT$ 0</div>
+                <div class="stock-badge" id="pd-stock">待售數量: 載入中...</div>
+ 
+                <div class="option-group" id="size-group">
+                    <div class="option-title"><i class="fa-solid fa-book-open"></i> 版本選擇</div>
+                    <div class="pill-container" id="size-options">
+                        <div class="pill" onclick="selectPill(this, 'size-options')">平裝版</div>
+                        <div class="pill" onclick="selectPill(this, 'size-options')">電子書</div>
+                        <div class="pill active" onclick="selectPill(this, 'size-options')">精裝版</div>
+                    </div>
+                </div>
+ 
+                <div class="option-group" id="color-group">
+                    <div class="option-title"><i class="fa-solid fa-circle-plus"></i> 加購書套</div>
+                    <div class="pill-container" id="color-options">
+                        <div class="pill active" onclick="selectPill(this, 'color-options')">無書套</div>
+                        <div class="pill" onclick="selectPill(this, 'color-options')">加購霧面書套 (+NT$20)</div>
+                        <div class="pill" onclick="selectPill(this, 'color-options')">加購亮面書套 (+NT$20)</div>
+                    </div>
+                </div>
+ 
+                <div class="option-group">
+                    <div class="option-title"><i class="fa-solid fa-plus-minus"></i> 購買數量</div>
+                    <div class="qty-container">
+                        <button class="qty-btn" onclick="changeQty(-1)"><i class="fa-solid fa-minus"></i></button>
+                        <input type="number" id="pd-qty" class="qty-input" value="1" min="1" readonly>
+                        <button class="qty-btn" onclick="changeQty(1)"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+ 
+                <button class="btn-add-cart" id="add-to-cart-btn">
+                    <i class="fa-solid fa-cart-plus"></i> 加入購物車
+                </button>
+            </div>
+        </div>
+    </div>
+ 
+    <footer class="footer">
+        <div class="footer-section">
+            <h3>BookSeller's</h3>
+            <p>📚 博客來風格精選書城，為您提供最優質的閱讀體驗。本月限定！主打書籍全面 79 折，再享免運優惠！</p>
+            <div class="social-links">
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h3>EXPLORE 探索</h3>
+            <ul>
+                <li><a href="index.html#casual">📚 本周暢銷</a></li>
+                <li><a href="index.html#sport">🧠 心理學熱賣</a></li>
+                <li><a href="index.html#high">✨ 館長熱推</a></li>
+                <li><a href="leaderboard.html">⭐ 熱銷排行</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>SUPPORT 支援</h3>
+            <p>📧 Email: support@booksellers.com</p>
+            <p>📞 Phone: 0800-666-888</p>
+        </div>
+        <div class="footer-section">
+            <h3>LEGAL 法律資訊</h3>
+            <p>© 2026 BookSeller's. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyC-LcCfcPYCYAQZ7n45YCe6tCY_jb-ygvI", authDomain: "sonicboom-shop.firebaseapp.com", projectId: "sonicboom-shop", storageBucket: "sonicboom-shop.firebasestorage.app", messagingSenderId: "976804831944", appId: "1:976804831944:web:6ede6a95196478bd49bbfd", measurementId: "G-3FEKWL0QXZ" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            const navLogin = document.getElementById('nav-login');
+            const navUser = document.getElementById('nav-user');
+            const navLogout = document.getElementById('nav-logout');
+            const navOrder = document.getElementById('nav-order');
+            const userDisplay = document.getElementById('user-display');
+
+            if (user) {
+                navLogin.style.display = 'none';
+                navUser.style.display = 'block';
+                navLogout.style.display = 'block';
+                if (navOrder) navOrder.style.display = 'block';
+                userDisplay.innerHTML = `<i class="fa-solid fa-user-check me-1"></i> 會員 ${user.displayName || user.email.split('@')[0]}`;
+            } else {
+                navLogin.style.display = 'block';
+                navUser.style.display = 'none';
+                navLogout.style.display = 'none';
+                if (navOrder) navOrder.style.display = 'none';
+            }
+        });
+
+        window.auth = auth; // Expose for other scripts if needed
+
+        document.getElementById('btn-logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            if(confirm("確定要登出嗎？")) { 
+                localStorage.removeItem('nike_cart'); 
+                signOut(auth).then(() => { window.location.href = "index.html"; });
+            }
+        });
+    </script>
+
+    <script>
+        function selectPill(element, containerId) {
+            const container = document.getElementById(containerId);
+            const pills = container.getElementsByClassName('pill');
+            for(let i = 0; i < pills.length; i++) { pills[i].classList.remove('active'); }
+            element.classList.add('active');
+        }
+
+        function changeQty(amount) {
+            const qtyInput = document.getElementById('pd-qty');
+            let currentQty = parseInt(qtyInput.value);
+            currentQty += amount;
+            if(currentQty < 1) currentQty = 1;
+            qtyInput.value = currentQty;
+        }
+
+        const productsDB = {
+            "shoe_casual_01": { name: "解憂雜貨店", price: 320, img: "pic/sandwich/1.jpg", desc: "東野圭吾經典之作。僻靜的街道旁有一家雜貨店，只要寫下煩惱投進投信口，第二天就會在牛奶箱裏得到回答。這家雜貨店不僅售賣日常用品，更是一處連接過去與未來的奇妙樹洞。" },
+            "shoe_casual_02": { name: "小王子", price: 250, img: "pic/sandwich/2.jpg", desc: "法國經典童話。來自B612星球的小王子，在旅途中遇見了國王、愛虛榮的人、酒鬼、商人、點燈人以及地理學家，最終來到地球，與狐狸和玫瑰展開了關於愛與責任的生命哲理探索。" },
+            "shoe_casual_03": { name: "追風箏的人", price: 350, img: "pic/sandwich/3.jpg", desc: "阿富汗動人故事。圍繞著富家少爺阿米爾和他的僕人哈桑展開，小說以風箏象徵希望、救贖與背叛，深深探討了人性、友情、父子情以及在戰爭洗禮下追尋心靈救贖的深刻歷程。" },
+            "shoe_casual_04": { name: "擺渡人", price: 280, img: "pic/sandwich/4.jpg", desc: "靈魂救贖之旅。如果命運是一條孤獨的河流，誰會是你靈魂的擺渡人？一場火車事故後，女孩迪倫發現自己置身於荒原中，而等待她的只有一個少年——擺渡人崔斯坦。這是一部令人潸然淚下的愛情與靈魂史詩。" },
+            
+            "shoe_sport_01": { name: "房思琪的初戀樂園", price: 330, img: "pic/sandwich/5.jpg", desc: "社會現象級小說。這是一部令人心碎且充滿文學才華的自傳體小說。作者以極致美麗且殘酷的筆觸，揭露了權力不對等之下的性侵害陰影，是當代華語文學中最具衝擊力的性別與倫理啟蒙作品。" },
+            "shoe_sport_02": { name: "我們仨", price: 260, img: "pic/sandwich/6.jpg", desc: "家族溫情散文。楊絳以深情而克制的筆觸，回憶了她與丈夫錢鍾書、女兒錢瑗一家三口數十年間相守相助、風雨同舟的家庭生活。全書分為虛實交織的三部分，字裡行間滿是至親離散的哀而不傷與溫暖回憶。" },
+            "shoe_sport_03": { name: "活著", price: 300, img: "pic/sandwich/7.jpg", desc: "生命意義探索。余華的長篇代表作。小說講述了地主少爺福貴在時代洪流與家庭變故中，歷經種種苦難、送走身邊所有親人，最終只剩下一頭老牛陪伴，卻依然堅韌地活在世上的故事。揭示了人是為了活着本身而活着。" },
+            "shoe_sport_04": { name: "百年孤寂", price: 420, img: "pic/sandwich/8.jpg", desc: "魔幻現實主義巨作。諾貝爾文學獎得主馬奎斯代表作。小說描寫了布恩迪亞家族七代人在馬康多小鎮的興衰起落，將神話、傳說、夢境與拉美的歷史現實完美融合，是一部波瀾壯闊的孤獨交響曲。" },
+
+            "shoe_high_01": { name: "人間失格", price: 270, img: "pic/sandwich/9.jpg", desc: "日本文學經典。太宰治的代表作，以主角大庭葉藏的自白口吻，道出了「失去了做人的資格」的極度孤獨與自我毀滅。這是一部刺痛靈魂的半自傳體傑作，展現了對生存本質的深沉省思與溫柔的求救。" },
+            "shoe_high_02": { name: "嫌疑人X的獻身", price: 340, img: "pic/sandwich/10.jpg", desc: "推理懸狂傑作。東野圭吾直木獎得獎作。百年一遇的數學天才石神，為了保護失手殺害前夫的鄰居靖子，精心設計了堪稱完美的偽裝與時間線。當物理學家湯川學介入調查，一場高智商的對決與震撼人心的愛情隨之展開。" },
+            "shoe_high_03": { name: "島上書店", price: 310, img: "pic/sandwich/11.jpg", desc: "書店人生哲理。沒有誰是一座孤島，每本書都是一個世界。中年喪妻、書店面臨危機的阿利斯，在收養了被遺棄在書店的女嬰瑪雅後，生活迎來了轉機。這是一部傷感而又溫馨的小說，展現了書籍對人生的救贖。" },
+            "shoe_high_04": { name: "目送", price: 290, img: "pic/sandwich/12.jpg", desc: "龍應台散文精選。這是一本生死筆記，深情描寫了父母的逝去、孩子的成長、親人的離散以及人生的孤獨。龍應台以溫婉細緻的文字，寫盡了人世間最深沉的牽絆與無可奈何的告別。" }
+        };
+
+        document.getElementById('navbarToggle').addEventListener('click', () => {
+            document.getElementById('navbarMenu').classList.toggle('active');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if(productId && productsDB[productId]) {
+                const pd = productsDB[productId];
+                document.title = `${pd.name} - BookSeller's`;
+                document.getElementById('pd-image').src = pd.img;
+                document.getElementById('pd-name').innerText = pd.name;
+                document.getElementById('pd-desc').innerText = pd.desc;
+                document.getElementById('pd-price').innerText = `NT$ ${pd.price.toLocaleString()}`;
+                
+                // 顯示版本與書套選擇
+                document.getElementById('size-group').style.display = 'block';
+                document.getElementById('color-group').style.display = 'block';
+                document.getElementById('pd-badge').innerText = '精選企劃';
+                document.getElementById('pd-badge').style.background = 'var(--accent-color)';
+
+                document.getElementById('add-to-cart-btn').addEventListener('click', () => {
+                    const user = window.auth ? window.auth.currentUser : null;
+                    if (!user) {
+                        alert("請先登入會員才能加入購物車！");
+                        window.location.href = "login.html";
+                        return;
+                    }
+                    const qty = parseInt(document.getElementById('pd-qty').value);
+                    const size = document.querySelector('#size-options .active').innerText;
+                    const color = document.querySelector('#color-options .active').innerText;
+                    
+                    let cart = JSON.parse(localStorage.getItem('nike_cart')) || [];
+                    const existingIndex = cart.findIndex(item => item.id === productId && item.size === size && item.color === color);
+                    
+                    if (existingIndex > -1) { cart[existingIndex].qty += qty; } 
+                    else { cart.push({ id: productId, qty: qty, size: size, color: color }); }
+
+                    localStorage.setItem('nike_cart', JSON.stringify(cart));
+                    alert(`【${pd.name}】(版本:${size} / 書套:${color}) x ${qty} 已加入購物車！`);
+                    window.location.href = "cart.html";
+                });
+
+                // ══ 庫存系統 ══
+                const INITIAL_STOCK = {
+                    "shoe_casual_01": 120, "shoe_casual_02": 150,
+                    "shoe_casual_03": 130, "shoe_casual_04": 110,
+                    "shoe_sport_01":  100, "shoe_sport_02":   80,
+                    "shoe_sport_03":   90, "shoe_sport_04":   95,
+                    "shoe_high_01":     5, "shoe_high_02":     8,
+                    "shoe_high_03":    15, "shoe_high_04":     3
+                };
+
+                function updateStock() {
+                    const orders = JSON.parse(localStorage.getItem('nike_orders')) || [];
+                    let sold = 0;
+                    orders.forEach(order => {
+                        (order.items || []).forEach(item => {
+                            if (item.id === productId) sold += (item.qty || 0);
+                        });
+                    });
+                    const total = INITIAL_STOCK[productId] || 0;
+                    const remaining = Math.max(0, total - sold);
+                    const stockEl = document.getElementById('pd-stock');
+                    const addBtn  = document.getElementById('add-to-cart-btn');
+                    if (!stockEl) return;
+
+                    if (remaining === 0) {
+                        stockEl.textContent = '⚠ 售罄 - 庫存不足';
+                        stockEl.className = 'stock-badge out';
+                        if (addBtn) { addBtn.disabled = true; addBtn.style.opacity = '0.4'; addBtn.style.cursor = 'not-allowed'; }
+                    } else if (remaining <= 10) {
+                        stockEl.textContent = `⚡ 待售數量: ${remaining} (庫存緊張)`;
+                        stockEl.className = 'stock-badge low';
+                    } else {
+                        stockEl.textContent = `待售數量: ${remaining}`;
+                        stockEl.className = 'stock-badge';
+                    }
+                }
+
+                updateStock();
+                // 其他分頁更新訂單時即時同步
+                window.addEventListener('storage', e => {
+                    if (e.key === 'nike_orders') updateStock();
+                });
+            } else {
+                alert('找不到該商品！將返回首頁。');
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>

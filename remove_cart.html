@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>移除購物車商品 - BookSeller's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Inter:wght@300;500;700&family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #eaeef1;
+            --card-bg: #ffffff;
+            --accent-color: #2d7c19;
+            --text-dim: #666666;
+            --tech-border: rgba(0, 0, 0, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg-color);
+            color: #333333;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+
+        /* ── 狀態卡片 ── */
+        .status-card {
+            background: var(--card-bg);
+            border: 1px solid var(--tech-border);
+            border-radius: 8px;
+            padding: 50px 60px;
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            animation: fadeSlideIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── 確認對話方塊樣式 ── */
+        .confirm-card {
+            background: var(--card-bg);
+            border: 2px solid #f59595;
+            border-radius: 8px;
+            padding: 50px 60px;
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(245,149,149,0.1);
+            animation: fadeSlideIn 0.5s ease forwards;
+        }
+
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .status-icon.danger  { color: #d32f2f; }
+        .status-icon.success { color: #2d7c19; }
+        .status-icon.error   { color: #d32f2f; }
+
+        .status-title {
+            font-family: 'Lora', serif;
+            font-size: 1.3rem; font-weight: bold;
+            color: var(--accent-color);
+            letter-spacing: 1px; margin-bottom: 12px;
+        }
+        .status-msg {
+            color: var(--text-dim);
+            font-size: 0.95rem; line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        /* ── 商品資訊卡 ── */
+        .prod-info-card {
+            background: rgba(211, 47, 47, 0.02);
+            border: 1px solid rgba(211, 47, 47, 0.15);
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+            text-align: left;
+            display: flex; align-items: center; gap: 16px;
+        }
+        .prod-info-card img {
+            width: 65px; height: 65px;
+            object-fit: contain;
+            background: #fafafa;
+            border: 1px solid var(--tech-border);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        .prod-info-card .info-text p { margin: 4px 0; font-size: 0.85rem; color: #555555; }
+        .prod-info-card .info-text span { color: #333333; font-weight: 600; }
+        .money { color: #d32f2f; font-weight: 700; }
+
+        /* ── 進度條 ── */
+        .progress-bar-wrap {
+            background: #e0e0e0;
+            border-radius: 4px;
+            height: 5px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59595, #2d7c19);
+            width: 0%;
+            transition: width 1.2s ease;
+            border-radius: 4px;
+        }
+
+        /* ── 按鈕 ── */
+        .btn03 {
+            display: inline-block;
+            background-color: #d32f2f;
+            border: 2px solid #d32f2f;
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-family: 'Lora', serif;
+            font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.25s, transform 0.2s;
+            margin: 4px;
+        }
+        .btn03:hover { background-color: #b71c1c; border-color: #b71c1c; color: #fff; transform: scale(1.03); }
+
+        .btn-cancel {
+            display: inline-block;
+            background: transparent;
+            color: #666;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-family: 'Lora', serif;
+            font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+            cursor: pointer;
+            margin: 4px;
+        }
+        .btn-cancel:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+        .btn02 {
+            display: inline-block;
+            background-color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 4px;
+            font-family: 'Lora', serif;
+            font-size: 0.85rem; font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background 0.25s, transform 0.2s;
+            margin: 4px;
+        }
+        .btn02:hover { background-color: #1e5210; border-color: #1e5210; color: #fff; transform: scale(1.03); }
+
+        /* ── 已移除後的橫線清單 ── */
+        .removed-item-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.02);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+        }
+        .removed-item-row .item-name { color: #777; text-decoration: line-through; }
+        .removed-item-row .item-price { color: #888; }
+    </style>
+</head>
+<body>
+
+    <div id="main-container">
+        <!-- 動態填入確認或結果畫面 -->
+        <div class="status-card">
+            <i class="fa-solid fa-circle-notch fa-spin status-icon" style="color:#888;"></i>
+            <div class="status-title">讀取中...</div>
+            <div class="status-msg">正在讀取購物車資料。</div>
+        </div>
+    </div>
+
+    <script>
+        /* ===== 商品資料庫 ===== */
+        const productsDB = {
+            "shoe_casual_01": { name: "解憂雜貨店", price: 320, img: "pic/sandwich/1.jpg" },
+            "shoe_casual_02": { name: "小王子", price: 250, img: "pic/sandwich/2.jpg" },
+            "shoe_casual_03": { name: "追風箏的人", price: 350, img: "pic/sandwich/3.jpg" },
+            "shoe_casual_04": { name: "擺渡人", price: 280, img: "pic/sandwich/4.jpg" },
+            "shoe_sport_01": { name: "房思琪的初戀樂園", price: 330, img: "pic/sandwich/5.jpg" },
+            "shoe_sport_02": { name: "我們仨", price: 260, img: "pic/sandwich/6.jpg" },
+            "shoe_sport_03": { name: "活著", price: 300, img: "pic/sandwich/7.jpg" },
+            "shoe_sport_04": { name: "百年孤寂", price: 420, img: "pic/sandwich/8.jpg" },
+            "shoe_high_01": { name: "人間失格", price: 270, img: "pic/sandwich/9.jpg" },
+            "shoe_high_02": { name: "嫌疑人X的獻身", price: 340, img: "pic/sandwich/10.jpg" },
+            "shoe_high_03": { name: "島上書店", price: 310, img: "pic/sandwich/11.jpg" },
+            "shoe_high_04": { name: "目送", price: 290, img: "pic/sandwich/12.jpg" }
+        };
+
+        /* ===== 讀取 URL 參數 ===== */
+        const params    = new URLSearchParams(window.location.search);
+        const indexStr  = params.get('index');  // 購物車陣列索引
+        const itemId    = params.get('id') || '';
+        const skipConfirm = params.get('confirm') === '1'; // 已確認 → 直接刪除
+
+        const container = document.getElementById('main-container');
+
+        /* ===== 讀取購物車取得目標 ===== */
+        function getTarget() {
+            const cart = JSON.parse(localStorage.getItem('nike_cart')) || [];
+            let targetIndex = -1;
+
+            if (indexStr !== null && !isNaN(parseInt(indexStr))) {
+                targetIndex = parseInt(indexStr);
+            } else if (itemId) {
+                targetIndex = cart.findIndex(item => item.id === itemId);
+            }
+
+            return { cart, targetIndex };
+        }
+
+        /* ===== 顯示確認畫面 ===== */
+        function showConfirm() {
+            const { cart, targetIndex } = getTarget();
+
+            if (targetIndex < 0 || targetIndex >= cart.length) {
+                showError('找不到指定商品', '購物車中找不到該商品，可能已經被移除。');
+                return;
+            }
+
+            const item = cart[targetIndex];
+            const p    = productsDB[item.id] || { name: '未知商品', price: 0, img: '' };
+
+            container.innerHTML = `
+                <div class="confirm-card">
+                    <i class="fa-solid fa-trash-can status-icon danger"></i>
+                    <div class="status-title">確認刪除商品？</div>
+                    <div class="status-msg">您即將從購物車中移除以下商品，此操作無法復原。</div>
+
+                    <div class="prod-info-card">
+                        <img src="${p.img}" alt="${p.name}">
+                        <div class="info-text">
+                            <p>書名：<span>${p.name}</span></p>
+                            <p>版本：<span>${item.size || '—'}</span> &nbsp; 書套：<span>${item.color || '—'}</span></p>
+                            <p>數量：<span>${item.qty} 件</span> &nbsp; 小計：<span class="money">NT$ ${(p.price * item.qty).toLocaleString()}</span></p>
+                        </div>
+                    </div>
+
+                    <button class="btn03" onclick="doRemove()">
+                        <i class="fa-solid fa-trash me-2"></i>確認刪除
+                    </button>
+                    <a href="cart.html" class="btn-cancel">
+                        <i class="fa-solid fa-xmark me-2"></i>取消
+                    </a>
+                </div>`;
+        }
+
+        /* ===== 執行刪除 ===== */
+        function doRemove() {
+            const { cart, targetIndex } = getTarget();
+
+            if (targetIndex < 0 || targetIndex >= cart.length) {
+                showError('操作失敗', '找不到要刪除的商品，請返回購物車重試。');
+                return;
+            }
+
+            const removed = cart[targetIndex];
+            const p       = productsDB[removed.id] || { name: '未知商品', price: 0, img: '' };
+            const removedTotal = p.price * removed.qty;
+
+            cart.splice(targetIndex, 1);
+            localStorage.setItem('nike_cart', JSON.stringify(cart));
+
+            // 成功畫面
+            container.innerHTML = `
+                <div class="status-card">
+                    <i class="fa-solid fa-circle-check status-icon success"></i>
+                    <div class="status-title">商品已移除！</div>
+                    <div class="status-msg">已成功從購物車移除此商品。</div>
+
+                    <div class="removed-item-row">
+                        <span class="item-name">🗑️ ${p.name} × ${removed.qty}</span>
+                        <span class="item-price">NT$ ${removedTotal.toLocaleString()}</span>
+                    </div>
+
+                    <div style="font-size:0.85rem; color:#888; margin-bottom:22px;">
+                        購物車目前共有 <strong style="color:#333;">${cart.length}</strong> 項商品
+                    </div>
+
+                    <div class="progress-bar-wrap">
+                        <div class="progress-bar-fill" id="prog-bar"></div>
+                    </div>
+
+                    <a href="cart.html" class="btn02">
+                        <i class="fa-solid fa-cart-shopping me-2"></i>返回購物車
+                    </a>
+                    <a href="index.html" class="btn-cancel">
+                        <i class="fa-solid fa-store me-2"></i>繼續選購
+                    </a>
+                </div>`;
+
+            setTimeout(() => {
+                const bar = document.getElementById('prog-bar');
+                if (bar) bar.style.width = '100%';
+            }, 100);
+
+            setTimeout(() => { window.location.href = 'cart.html'; }, 1400);
+        }
+
+        /* ===== 錯誤畫面 ===== */
+        function showError(title, msg) {
+            container.innerHTML = `
+                <div class="status-card">
+                    <i class="fa-solid fa-circle-xmark status-icon error"></i>
+                    <div class="status-title">${title}</div>
+                    <div class="status-msg">${msg}</div>
+                    <a href="cart.html" class="btn03">
+                        <i class="fa-solid fa-cart-shopping me-2"></i>返回購物車
+                    </a>
+                </div>`;
+        }
+
+        /* ===== 進入點 ===== */
+        setTimeout(() => {
+            if (skipConfirm) {
+                doRemove();   // 帶有 ?confirm=1 → 直接刪除
+            } else {
+                showConfirm();
+            }
+        }, 350);
+
+        // 暴露給外部按鈕呼叫
+        window.doRemove = doRemove;
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>註冊會員 - BookSeller's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #eaeef1;
+            --accent-color: #2d7c19;
+            --text-dim: #666666;
+            --glass-bg: #ffffff;
+            --glass-border: rgba(0, 0, 0, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', 'Noto Sans TC', sans-serif; 
+            background: var(--bg-color); 
+            color: #333333; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 20px;
+            overflow: auto; /* Allow scrolling if content is long */
+            position: relative;
+        }
+
+        /* Animated Background Elements */
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(45,124,25,0.06) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            z-index: -1;
+            filter: blur(60px);
+        }
+        .glow-1 { top: -15%; right: -10%; animation: float 25s infinite alternate; }
+        .glow-2 { bottom: -15%; left: -10%; animation: float 30s infinite alternate-reverse; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100px, 100px); }
+        }
+
+        .signup-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            width: 100%;
+            max-width: 500px;
+            padding: 50px 40px;
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            margin: 40px 0;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .logo-link { display: inline-block; margin-bottom: 25px; transition: 0.3s; }
+        .logo-link:hover { transform: scale(1.1); }
+        .logo { width: 60px; border-radius: 50%; }
+
+        h2 { 
+            font-family: 'Lora', serif; 
+            font-size: 2rem; 
+            font-weight: bold; 
+            margin-bottom: 10px; 
+            letter-spacing: 2px;
+            color: var(--accent-color);
+        }
+        .subtitle { color: var(--text-dim); margin-bottom: 35px; font-size: 0.85rem; letter-spacing: 1px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; text-align: left; }
+        
+        .form-group label { 
+            display: block; 
+            font-family: 'Lora', serif; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            color: var(--text-dim); 
+            margin-bottom: 8px; 
+            letter-spacing: 1.5px;
+        }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 0.85rem; }
+        .form-group input { 
+            width: 100%; 
+            padding: 12px 15px 12px 40px; 
+            background: #ffffff; 
+            border: 1px solid #cccccc; 
+            color: #333333; 
+            border-radius: 4px; 
+            outline: none; 
+            transition: 0.3s; 
+            font-size: 0.9rem;
+        }
+        .form-group input:focus { border-color: var(--accent-color); box-shadow: 0 0 8px rgba(45, 124, 25, 0.15); }
+
+        .captcha-row { display: flex; gap: 10px; margin-top: 5px; }
+        .captcha-display { 
+            flex: 1; 
+            background: #f5f7f8; 
+            color: var(--accent-color); 
+            font-family: 'Lora', serif; 
+            font-size: 1.1rem; 
+            font-weight: bold;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            letter-spacing: 5px; 
+            cursor: pointer; 
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            user-select: none;
+            transition: 0.3s;
+        }
+        .captcha-display:hover { background: #eef1f2; }
+        .captcha-input { flex: 1; padding-left: 15px !important; }
+
+        .btn-signup { 
+            width: 100%; 
+            padding: 18px; 
+            background: var(--accent-color); 
+            color: white; 
+            border: none; 
+            font-family: 'Lora', serif; 
+            font-weight: bold; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            letter-spacing: 3px; 
+            margin-top: 30px;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(45, 124, 25, 0.15);
+        }
+        .btn-signup:hover { background: #1e5210; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(45, 124, 25, 0.25); }
+        .btn-signup:active { transform: translateY(0); }
+        .btn-signup:disabled { background: #cccccc; color: #888888; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .footer-links { margin-top: 30px; color: var(--text-dim); font-size: 0.85rem; line-height: 2; }
+        .footer-links a { color: var(--accent-color); text-decoration: none; font-weight: bold; transition: 0.3s; }
+        .footer-links a:hover { color: #ff0000; }
+        
+        .back-home { display: block; margin-top: 15px; opacity: 0.7; font-size: 0.75rem; letter-spacing: 1px; color: var(--text-dim); text-decoration: none; }
+        .back-home:hover { opacity: 1; color: var(--accent-color); }
+
+        @media (max-width: 480px) {
+            .signup-container { padding: 40px 20px; }
+            h2 { font-size: 1.6rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
+    <div class="signup-container">
+        <a href="index.html" class="logo-link">
+            <img src="pic/logo.png" alt="BookSeller's Logo" class="logo">
+        </a>
+        <h2>註冊會員</h2>
+        <p class="subtitle">加入 BookSeller's 書城，開始您的閱讀旅程</p>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label>會員暱稱</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="username" placeholder="輸入暱稱" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>電子信箱</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" placeholder="name@example.com" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>密碼</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="請設定至少 6 位密碼" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>確認密碼</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="confirm-password" placeholder="再次輸入密碼" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>驗證碼</label>
+                <div class="captcha-row">
+                    <input type="text" id="captcha-input" class="captcha-input" placeholder="輸入右側驗證碼">
+                    <div id="captcha-display" class="captcha-display" title="點擊換一張">1234</div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="btn-signup" class="btn-signup">註冊會員</button>
+        
+        <div class="footer-links">
+            已經有帳號了？ <a href="login.html">會員登入</a>
+            <br>
+            <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-left"></i> 返回書城首頁</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyC-LcCfcPYCYAQZ7n45YCe6tCY_jb-ygvI", authDomain: "sonicboom-shop.firebaseapp.com", projectId: "sonicboom-shop", storageBucket: "sonicboom-shop.firebasestorage.app", messagingSenderId: "976804831944", appId: "1:976804831944:web:6ede6a95196478bd49bbfd", measurementId: "G-3FEKWL0QXZ" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        let currentCaptcha = "";
+        function generateCaptcha() {
+            const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            let result = "";
+            for(let i=0; i<4; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+            currentCaptcha = result;
+            document.getElementById('captcha-display').innerText = result;
+        }
+
+        generateCaptcha();
+        document.getElementById('captcha-display').addEventListener('click', generateCaptcha);
+
+        document.getElementById('btn-signup').addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPwd = document.getElementById('confirm-password').value;
+            const captchaInput = document.getElementById('captcha-input').value.toUpperCase();
+
+            if(!username || !email || !password) { alert("請填寫所有欄位！"); return; }
+            if(password.length < 6) { alert("密碼長度需至少 6 位數！"); return; }
+            if(password !== confirmPwd) { alert("兩次密碼輸入不一致！"); return; }
+            if(captchaInput !== currentCaptcha) { 
+                alert("驗證碼錯誤，請重新輸入！"); 
+                generateCaptcha(); 
+                document.getElementById('captcha-input').value = "";
+                return; 
+            }
+
+            const btn = document.getElementById('btn-signup');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 正在處理註冊中...';
+            btn.disabled = true;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    updateProfile(user, { displayName: username }).then(() => {
+                        window.location.href = "success.html?type=signup&name=" + encodeURIComponent(username);
+                    });
+                })
+                .catch((error) => {
+                    alert("註冊失敗：" + error.message);
+                    generateCaptcha();
+                    btn.innerHTML = '註冊會員';
+                    btn.disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>

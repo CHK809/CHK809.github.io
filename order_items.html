@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單明細 - BookSeller's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #eaeef1;
+            --card-bg: #ffffff;
+            --accent-color: #2d7c19;
+            --text-dim: #666666;
+            --nav-bg: #bcd8de;
+            --nav-text: #2d7c19;
+            --nav-hover-bg: #A3D1D1;
+            --nav-hover-text: #ff0000;
+            --brand-text-color: #287418;
+            --tech-border: rgba(0, 0, 0, 0.08);
+            --tech-blue: #2d7c19;
+        }
+        body {
+            background: var(--bg-color);
+            color: #333333;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            background: var(--nav-bg) !important;
+            border-bottom: 1px solid var(--tech-border);
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .brand-logo {
+            font-family: 'Lora', serif; font-weight: bold;
+            color: var(--brand-text-color) !important; text-decoration: none;
+            display: flex; align-items: center; letter-spacing: 1px;
+            font-size: 1.5rem;
+        }
+        .brand-logo img { width: 45px; height: auto; margin-right: 12px; border-radius: 50%; }
+        .navbar-nav a {
+            color: var(--nav-text) !important;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .navbar-nav a:hover { color: var(--nav-hover-text) !important; background-color: var(--nav-hover-bg); }
+
+        /* ── Header Block ── */
+        .tech-header-block {
+            background: linear-gradient(135deg, var(--nav-bg), #b0d3d3);
+            border: 1px solid rgba(45, 124, 25, 0.2);
+            border-radius: 4px;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 24px auto 10px;
+            max-width: 480px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .tech-header-block strong {
+            font-family: 'Lora', serif;
+            font-size: 1.25rem;
+            color: var(--accent-color);
+            letter-spacing: 3px;
+            text-shadow: none;
+        }
+
+        /* ── Order Number Tag ── */
+        .order-id-tag {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .order-id-tag span {
+            font-family: 'Lora', serif;
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            letter-spacing: 2px;
+            border: 1px solid rgba(45, 124, 25, 0.25);
+            background: rgba(45, 124, 25, 0.05);
+            padding: 6px 18px;
+            border-radius: 2px;
+        }
+
+        /* ── Summary Card ── */
+        .summary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--tech-border);
+            border-radius: 6px;
+            max-width: 540px;
+            margin: 0 auto 28px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+        .summary-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--tech-border);
+            border-right: 1px solid var(--tech-border);
+            text-align: center;
+        }
+        .summary-item:nth-child(2n) { border-right: none; }
+        .summary-item .s-label {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .summary-item .s-value {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #333333;
+        }
+        .summary-item .s-value.money { color: #d32f2f; }
+        .summary-item .s-value.discount { color: #2d7c19; }
+        .summary-item .s-value.final { color: #d32f2f; font-size: 1.2rem; }
+
+        .badge-payment {
+            background: rgba(45, 124, 25, 0.08);
+            color: var(--accent-color);
+            border: 1px solid rgba(45, 124, 25, 0.2);
+            font-size: 0.8rem; padding: 4px 10px; border-radius: 2px;
+            display: inline-block;
+        }
+        .badge-status {
+            background: rgba(45, 124, 25, 0.08);
+            color: var(--accent-color);
+            border: 1px solid rgba(45, 124, 25, 0.2);
+            font-size: 0.8rem; padding: 4px 10px; border-radius: 2px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        /* ── Section Divider ── */
+        .tech-section-divider {
+            background: linear-gradient(135deg, var(--accent-color), #409a28);
+            border: 1px solid rgba(45, 124, 25, 0.2);
+            border-radius: 4px;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 16px;
+            max-width: 540px;
+            box-shadow: 0 4px 12px rgba(45, 124, 25, 0.15);
+        }
+        .tech-section-divider strong {
+            font-family: 'Lora', serif;
+            font-size: 1rem;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        /* ── Items Table Card ── */
+        .detail-card {
+            background: var(--card-bg);
+            border: 1px solid var(--tech-border);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            max-width: 540px;
+            margin: 0 auto 30px;
+        }
+        .items-table { width: 100%; border-collapse: collapse; }
+        .items-table th, .items-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--tech-border);
+            text-align: center;
+            vertical-align: middle;
+            color: #333333;
+        }
+        .items-table th {
+            background: #f5f7f8;
+            color: #555555;
+            font-family: 'Lora', serif;
+            font-size: 0.75rem; letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .items-table tbody tr:hover { background: rgba(0,0,0,0.01); }
+        .items-table tbody tr:last-child td { border-bottom: none; }
+
+        .prod-img {
+            width: 65px; height: 65px;
+            object-fit: contain;
+            background: #fafafa;
+            border-radius: 4px;
+            border: 1px solid #f0f0f0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        .prod-name { font-weight: bold; font-size: 0.9rem; color: #333333; text-align: left; }
+        .prod-name small { display: block; color: #666; margin-top: 3px; font-size: 0.78rem; }
+        .money { color: #d32f2f; font-weight: 700; font-size: 0.9rem; }
+
+        /* ── Back Button ── */
+        .btn-back {
+            font-family: 'Lora', serif;
+            font-size: 0.82rem; font-weight: 700;
+            padding: 12px 30px; border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            transition: all 0.3s;
+            border: 1px solid rgba(45, 124, 25, 0.25);
+            color: var(--accent-color);
+            text-decoration: none;
+            display: inline-block;
+            background: transparent;
+        }
+        .btn-back:hover {
+            border-color: #1e5210; color: white;
+            background: #1e5210;
+        }
+
+        /* ── Not Found ── */
+        .not-found {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .not-found i { color: var(--accent-color); opacity: 0.25; margin-bottom: 20px; }
+        .not-found h4 { font-family: 'Lora', serif; letter-spacing: 1px; color: var(--accent-color); }
+
+        /* ── Footer ── */
+        .footer {
+            background: #ffffff; padding: 4rem 20px;
+            border-top: 1px solid var(--tech-border);
+            margin-top: auto;
+            font-size: 0.85rem; color: #666;
+            text-align: center;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 576px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .summary-item { border-right: none; }
+            .prod-img { width: 50px; height: 50px; }
+            .items-table th, .items-table td { padding: 10px 6px; font-size: 0.8rem; }
+            .prod-name { font-size: 0.82rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark py-3">
+        <div class="container">
+            <a class="brand-logo fs-4" href="index.html">
+                <img src="./pic/logo.png" alt="BookSeller's" class="logo">
+                <span class="brand-text" style="font-family: 'Lora', serif; font-weight: bold; margin-left: 5px; color: var(--brand-text-color);">BookSeller's</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav gap-3">
+                    <li class="nav-item"><a class="nav-link" href="index.html" style="color: var(--nav-text) !important; font-weight: bold;">繼續選購</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cart.html" style="color: var(--nav-text) !important; font-weight: bold;">購物車</a></li>
+                    <li class="nav-item"><a class="nav-link" href="orders.html" style="color: var(--nav-text) !important; font-weight: bold;">我的訂單</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="#" onclick="logout(event)" style="font-weight: bold;">登出</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container py-4" style="flex:1;" id="main-content">
+
+        <!-- 標題 -->
+        <div class="tech-header-block">
+            <strong>訂單明細</strong>
+        </div>
+
+        <!-- 訂單編號標籤 -->
+        <div class="order-id-tag">
+            <span id="order-num-tag"><i class="fa-solid fa-hashtag me-1"></i>載入中...</span>
+        </div>
+
+        <!-- 訂單摘要 -->
+        <div class="summary-card" id="summary-card">
+            <div class="summary-grid" id="summary-grid">
+                <!-- 動態載入 -->
+            </div>
+        </div>
+
+        <!-- 商品明細標題 -->
+        <div class="tech-section-divider">
+            <strong>商品明細</strong>
+        </div>
+
+        <!-- 商品明細表 -->
+        <div class="detail-card">
+            <div class="table-responsive">
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>封面</th>
+                            <th>書名 / 版本</th>
+                            <th>單價</th>
+                            <th>數量</th>
+                            <th>小計</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-tbody">
+                        <!-- 動態載入 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 返回按鈕 -->
+        <div class="d-flex justify-content-center gap-2 mb-5">
+            <a href="index.html" class="btn btn-success w-25">返回首頁</a>
+            <a href="orders.html" class="btn btn-warning w-25">返回訂單列表</a>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 BookSeller's. All rights reserved. Designed by Future Labs</p>
+        </div>
+    </footer>
+
+    <!-- Firebase Auth / Logout -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyC-LcCfcPYCYAQZ7n45YCe6tCY_jb-ygvI", authDomain: "sonicboom-shop.firebaseapp.com", projectId: "sonicboom-shop", storageBucket: "sonicboom-shop.firebasestorage.app", messagingSenderId: "976804831944", appId: "1:976804831944:web:6ede6a95196478bd49bbfd", measurementId: "G-3FEKWL0QXZ" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                alert("請先登入會員以查看訂單！");
+                window.location.href = "login.html";
+            }
+        });
+
+        window.logout = function(e) {
+            e.preventDefault();
+            if (confirm("確定要登出嗎？")) {
+                localStorage.removeItem('nike_cart');
+                signOut(auth).then(() => { window.location.href = "index.html"; });
+            }
+        }
+    </script>
+
+    <script>
+        /* ===== 商品資料庫 (與 checkout.html 同步) ===== */
+        const productsDB = {
+            "shoe_casual_01": { name: "解憂雜貨店", price: 320, img: "pic/sandwich/1.jpg" },
+            "shoe_casual_02": { name: "小王子", price: 250, img: "pic/sandwich/2.jpg" },
+            "shoe_casual_03": { name: "追風箏的人", price: 350, img: "pic/sandwich/3.jpg" },
+            "shoe_casual_04": { name: "擺渡人", price: 280, img: "pic/sandwich/4.jpg" },
+            "shoe_sport_01": { name: "房思琪的初戀樂園", price: 330, img: "pic/sandwich/5.jpg" },
+            "shoe_sport_02": { name: "我們仨", price: 260, img: "pic/sandwich/6.jpg" },
+            "shoe_sport_03": { name: "活著", price: 300, img: "pic/sandwich/7.jpg" },
+            "shoe_sport_04": { name: "百年孤寂", price: 420, img: "pic/sandwich/8.jpg" },
+            "shoe_high_01": { name: "人間失格", price: 270, img: "pic/sandwich/9.jpg" },
+            "shoe_high_02": { name: "嫌疑人X的獻身", price: 340, img: "pic/sandwich/10.jpg" },
+            "shoe_high_03": { name: "島上書店", price: 310, img: "pic/sandwich/11.jpg" },
+            "shoe_high_04": { name: "目送", price: 290, img: "pic/sandwich/12.jpg" }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 從 URL 取得訂單編號
+            const params = new URLSearchParams(window.location.search);
+            const orderId = params.get('id');
+
+            if (!orderId) {
+                showNotFound('未提供訂單編號');
+                return;
+            }
+
+            // 從 localStorage 查找訂單
+            const allOrders = JSON.parse(localStorage.getItem('nike_orders')) || [];
+            const order = allOrders.find(o => o.order_num === orderId);
+
+            if (!order) {
+                showNotFound('找不到此訂單：' + orderId);
+                return;
+            }
+
+            renderOrder(order);
+        });
+
+        function renderOrder(order) {
+            // 訂單編號標籤
+            document.getElementById('order-num-tag').innerHTML =
+                `<i class="fa-solid fa-hashtag me-1"></i>${order.order_num}`;
+
+            // 訂單摘要
+            const summaryGrid = document.getElementById('summary-grid');
+            summaryGrid.innerHTML = `
+                <div class="summary-item">
+                    <span class="s-label"><i class="fa-solid fa-calendar me-1"></i>訂單日期</span>
+                    <span class="s-value">${order.date}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="s-label"><i class="fa-solid fa-wallet me-1"></i>付款方式</span>
+                    <span class="s-value"><span class="badge-payment">${order.payment_method}</span></span>
+                </div>
+                <div class="summary-item">
+                    <span class="s-label"><i class="fa-solid fa-tag me-1"></i>訂單金額</span>
+                    <span class="s-value money">NT$ ${order.total_amount.toLocaleString()}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="s-label"><i class="fa-solid fa-percent me-1"></i>折扣</span>
+                    <span class="s-value discount">-NT$ ${order.discount_amount.toLocaleString()}</span>
+                </div>
+                <div class="summary-item" style="grid-column: span 2;">
+                    <span class="s-label"><i class="fa-solid fa-money-bill me-1"></i>實付金額</span>
+                    <span class="s-value final">NT$ ${order.final_amount.toLocaleString()}</span>
+                </div>
+                <div class="summary-item" style="grid-column: span 2; border-bottom: none;">
+                    <span class="s-label"><i class="fa-solid fa-circle-check me-1"></i>訂單狀態</span>
+                    <span class="s-value"><span class="badge-status">${order.order_status}</span></span>
+                </div>
+            `;
+
+            // 商品明細
+            const tbody = document.getElementById('items-tbody');
+            const items = order.items || [];
+
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-5">此訂單沒有商品資料</td></tr>`;
+                return;
+            }
+
+            let rows = '';
+            items.forEach(item => {
+                // 嘗試從 item 本身取得資訊（checkout.html 有存），否則從 productsDB 查
+                const name  = item.name  || (productsDB[item.id] ? productsDB[item.id].name  : item.id);
+                const img   = item.image || (productsDB[item.id] ? productsDB[item.id].img   : '');
+                const price = item.price || (productsDB[item.id] ? productsDB[item.id].price : 0);
+                const sub   = item.subtotal || (price * item.qty);
+
+                rows += `
+                <tr>
+                    <td>
+                        ${img ? `<img src="${img}" alt="${name}" class="prod-img">` : '<i class="fa-solid fa-image text-muted fa-2x"></i>'}
+                    </td>
+                    <td class="prod-name">
+                        ${name}
+                        <small>版本: ${item.size || ''} ${item.color ? '| 書套: ' + item.color : ''}</small>
+                    </td>
+                    <td class="money">NT$ ${price.toLocaleString()}</td>
+                    <td>${item.qty}</td>
+                    <td class="money">NT$ ${sub.toLocaleString()}</td>
+                </tr>`;
+            });
+            tbody.innerHTML = rows;
+        }
+
+        function showNotFound(msg) {
+            document.getElementById('summary-card').style.display = 'none';
+            document.querySelector('.tech-section-divider').style.display = 'none';
+            document.querySelector('.detail-card').style.display = 'none';
+            document.getElementById('order-num-tag').innerHTML = '';
+
+            const content = document.getElementById('main-content');
+            const notFound = document.createElement('div');
+            notFound.className = 'not-found';
+            notFound.innerHTML = `
+                <i class="fa-solid fa-folder-open fa-4x mb-3 d-block"></i>
+                <h4 class="text-secondary fw-bold mb-3">找不到訂單明細</h4>
+                <p class="text-muted mb-4">${msg}</p>
+                <div class="d-flex justify-content-center gap-2 mt-4">
+                    <a href="index.html" class="btn btn-success px-4 py-2 font-orbitron" style="border-radius: 4px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">返回首頁</a>
+                    <a href="orders.html" class="btn btn-warning px-4 py-2 font-orbitron" style="border-radius: 4px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">返回訂單列表</a>
+                </div>
+            `;
+            content.appendChild(notFound);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的購物車 - BookSeller's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #eaeef1;
+            --card-bg: #ffffff;
+            --accent-color: #2d7c19;
+            --text-dim: #666666;
+            --nav-bg: #bcd8de;
+            --nav-text: #2d7c19;
+            --nav-hover-bg: #A3D1D1;
+            --nav-hover-text: #ff0000;
+            --brand-text-color: #287418;
+            --tech-border: rgba(0, 0, 0, 0.08);
+            --tech-blue: #2d7c19;
+        }
+        body {
+            background: var(--bg-color);
+            color: #333333;
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            background: var(--nav-bg) !important;
+            border-bottom: 1px solid var(--tech-border);
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .brand-logo {
+            font-family: 'Lora', serif; font-weight: bold;
+            color: var(--brand-text-color) !important; text-decoration: none;
+            display: flex; align-items: center; letter-spacing: 1px;
+            font-size: 1.5rem;
+        }
+        .brand-logo img { width: 45px; height: auto; margin-right: 12px; border-radius: 50%; }
+
+        /* ── Page title ── */
+        .page-title {
+            font-family: 'Lora', serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            font-weight: 700; letter-spacing: 1px;
+            text-align: center; margin-bottom: 2rem;
+            color: var(--accent-color);
+        }
+        .page-title span {
+            color: var(--accent-color);
+        }
+
+        /* ── Cart table card ── */
+        .cart-card {
+            background: var(--card-bg);
+            border: 1px solid var(--tech-border);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .cart-card h5 {
+            font-family: 'Lora', serif;
+            font-size: 1.1rem; letter-spacing: 1px;
+            color: var(--accent-color);
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--tech-border);
+            margin: 0;
+            background: #fdfdfd;
+        }
+
+        /* ── Table ── */
+        table { border-collapse: collapse; width: 100%; }
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+            padding: 14px 10px;
+            border-bottom: 1px solid var(--tech-border);
+            color: #333333;
+        }
+        thead th {
+            background: #f5f7f8;
+            font-size: 0.82rem; letter-spacing: 0.5px;
+            color: #555555; text-transform: uppercase;
+            font-weight: bold;
+        }
+        tbody tr:hover { background: rgba(0,0,0,0.01); }
+        .prod-img {
+            width: 70px; height: 70px;
+            object-fit: contain;
+            background: #fafafa;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+        .prod-name { font-weight: bold; font-size: 0.95rem; color: #333333; }
+
+        /* 數量輸入 */
+        .qty-input {
+            width: 55px; text-align: center;
+            background: #ffffff; border: 1px solid #cccccc;
+            color: #333333; padding: 5px 2px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .qty-input:focus { outline: none; border-color: var(--accent-color); }
+
+        /* ── Buttons (套用 A11 配色) ── */
+        .btn02 {
+            background-color: var(--accent-color);
+            border: 2px solid var(--accent-color);
+            color: #fff;
+            padding: 5px 12px;
+            font-size: 0.82rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.25s, border-color 0.25s;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+        .btn02:hover { background-color: #1e5210; border-color: #1e5210; }
+
+        .btn03 {
+            background-color: #d32f2f;
+            border: 2px solid #d32f2f;
+            color: #fff;
+            padding: 5px 12px;
+            font-size: 0.82rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.25s, border-color 0.25s;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+        .btn03:hover { background-color: #b71c1c; border-color: #b71c1c; }
+
+        .money { color: #d32f2f; font-weight: 700; }
+
+        /* ── 結帳明細卡片 ── */
+        .checkout-card {
+            background: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 6px;
+            padding: 28px 24px;
+            position: sticky; top: 80px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .checkout-card h5 {
+            font-family: 'Lora', serif;
+            font-size: 1.15rem; letter-spacing: 1px;
+            color: var(--accent-color); margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--tech-border);
+            font-weight: bold;
+        }
+        .checkout-row {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 14px;
+            font-size: 0.95rem; color: #444;
+        }
+        .checkout-row .label { color: #666; }
+        .checkout-row .value { font-weight: 700; font-size: 1.05rem; }
+        .checkout-total {
+            display: flex; justify-content: space-between;
+            align-items: center;
+            margin-top: 18px; padding-top: 16px;
+            border-top: 1px solid var(--tech-border);
+            font-family: 'Lora', serif;
+            font-size: 1.05rem; color: #333333;
+            font-weight: bold;
+        }
+        .checkout-total .total-val { font-size: 1.4rem; color: #d32f2f; }
+
+        .btn-checkout {
+            display: block; width: 100%;
+            background: var(--accent-color); border: none; color: #fff;
+            font-size: 0.95rem; font-weight: 700;
+            padding: 14px; border-radius: 4px;
+            margin-top: 20px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px;
+            transition: background 0.25s, transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 10px rgba(45,124,25,0.15);
+        }
+        .btn-checkout:hover { background: #1e5210; transform: scale(1.02); }
+        .btn-checkout:disabled { background: #cccccc; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ── Empty cart ── */
+        .empty-cart {
+            text-align: center; padding: 80px 20px;
+            display: none;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid var(--tech-border);
+        }
+        .empty-cart i { opacity: 0.4; color: var(--accent-color); }
+
+        /* ── Toast ── */
+        .toast-custom { background: #ffffff; color: #333333; border: 1px solid var(--tech-border); }
+
+        /* ── Footer ── */
+        .footer {
+            background: #ffffff; padding: 5rem 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 3rem; border-top: 1px solid var(--tech-border);
+            margin-top: auto;
+            color: #555;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.02);
+        }
+        .footer-section { display: flex; flex-direction: column; gap: 1.2rem; }
+        .footer-section h3 {
+            font-family: 'Lora', serif; color: var(--accent-color);
+            font-size: 1.1rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .footer-section p, .footer-section ul li { color: #666; font-size: 0.85rem; line-height: 1.8; margin: 0; }
+        .footer-section ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+        .footer-section ul li a { text-decoration: none; color: inherit; transition: all 0.3s; }
+        .footer-section ul li a:hover { color: var(--accent-color); padding-left: 5px; }
+        .social-links { display: flex; gap: 1.5rem; margin-top: 0.5rem; }
+        .social-links a { text-decoration: none; color: #777; font-size: 1.2rem; transition: all 0.3s; }
+        .social-links a:hover { color: var(--accent-color); transform: translateY(-3px); }
+
+        @media (max-width: 768px) {
+            .brand-logo img { width: 28px; margin-right: 8px; }
+            .prod-img { width: 50px; height: 50px; }
+            .checkout-card { position: static; margin-top: 24px; }
+            .footer { padding: 3rem 1.5rem; gap: 2rem; text-align: center; }
+            .social-links { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ══ Navbar ══ -->
+    <nav class="navbar navbar-expand-lg navbar-dark py-3">
+        <div class="container">
+            <a class="navbar-brand brand-logo fs-4" href="index.html">
+                <img src="./pic/logo.png" alt="BookSeller's" class="logo">
+                <span class="brand-text" style="font-family: 'Lora', serif; font-weight: bold; margin-left: 5px;">BookSeller's</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon" style="filter:invert(1);"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link fw-bold" href="index.html" style="color: var(--nav-text) !important;">
+                            <i class="fa-solid fa-arrow-left"></i> 繼續選購
+                        </a>
+                    </li>
+                    <li class="nav-item" id="nav-order" style="display:none;">
+                        <a class="nav-link fw-bold" href="orders.html" style="color: var(--nav-text) !important;">
+                            <i class="fa-solid fa-receipt"></i> 我的訂單
+                        </a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <span id="user-display" class="badge bg-white text-dark px-3 py-2"
+                          style="display:none; font-size:0.85rem; border: 1px solid var(--tech-border);"></span>
+                    <a id="btn-login" class="btn btn-outline-success rounded-0 px-3 py-2" href="login.html" style="color: var(--nav-text); border-color: var(--nav-text);">登入</a>
+                    <button id="btn-logout" class="btn btn-outline-danger rounded-0 px-3 py-2" style="display:none;">登出</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══ Main Content ══ -->
+    <div class="container py-5" style="flex:1;">
+        <h2 class="page-title"><i class="fa-solid fa-cart-shopping me-3"></i><span>購物車清單</span></h2>
+
+        <!-- 有商品時顯示 -->
+        <div id="cart-content" class="row g-4">
+            <!-- 左側：表格 -->
+            <div class="col-lg-8">
+                <div class="cart-card">
+                    <h5><i class="fa-solid fa-list me-2"></i>商品明細</h5>
+                    <div class="table-responsive">
+                        <table id="cart-table">
+                            <thead>
+                                <tr>
+                                    <th>書名 / 選購版本</th>
+                                    <th>封面</th>
+                                    <th>單價</th>
+                                    <th>數量</th>
+                                    <th>小計</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：結帳明細 -->
+            <div class="col-lg-4">
+                <div class="checkout-card">
+                    <h5><i class="fa-solid fa-receipt me-2"></i>結帳明細</h5>
+                    <div class="checkout-row">
+                        <span class="label">結帳金額</span>
+                        <span class="value money">NT$ <span id="subtotal-val">0</span></span>
+                    </div>
+                    <div class="checkout-row">
+                        <span class="label">本次優惠/折扣</span>
+                        <span class="value" style="color:#2d7c19;">NT$ <span id="discount-val">0</span></span>
+                    </div>
+                    <div class="checkout-row">
+                        <span class="label">運費</span>
+                        <span class="value" style="color:#2d7c19;">免費</span>
+                    </div>
+                    <div class="checkout-total">
+                        <span>應付金額</span>
+                        <span class="total-val">NT$ <span id="final-total">0</span></span>
+                    </div>
+                    <button class="btn-checkout" id="checkout-btn" onclick="checkout()">
+                        <i class="fa-solid fa-credit-card me-2"></i>前往結帳
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 購物車空時顯示 -->
+        <div class="empty-cart" id="empty-state">
+            <i class="fa-solid fa-basket-shopping fa-5x text-secondary mb-4"></i>
+            <h3 class="text-secondary fw-bold mt-3">您的購物車是空的</h3>
+            <p class="text-muted mb-4">快去挑選您喜愛的商品！</p>
+            <a href="index.html" class="btn btn-outline-light rounded-pill px-5 py-2 fs-5">
+                <i class="fa-solid fa-store me-2"></i>去逛逛
+            </a>
+        </div>
+    </div>
+
+    <!-- ══ Footer ══ -->
+    <footer class="footer">
+        <div class="footer-section">
+            <h3>BookSeller's</h3>
+            <p>📚 博客來風格精選書城，為您提供最優質的閱讀體驗。本月限定！主打書籍全面 79 折，再享免運優惠！</p>
+            <div class="social-links">
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+            </div>
+        </div>
+        <div class="footer-section">
+            <h3>EXPLORE 探索</h3>
+            <ul>
+                <li><a href="index.html#casual">📚 本周暢銷</a></li>
+                <li><a href="index.html#sport">🧠 心理學熱賣</a></li>
+                <li><a href="index.html#high">✨ 館長熱推</a></li>
+                <li><a href="leaderboard.html">⭐ 熱銷排行</a></li>
+            </ul>
+        </div>
+        <div class="footer-section">
+            <h3>SUPPORT 支援</h3>
+            <p>📧 Email: support@booksellers.com</p>
+            <p>📞 Phone: 0800-666-888</p>
+            <p>🏪 Location: Bookstore St, Read City</p>
+        </div>
+        <div class="footer-section">
+            <h3>LEGAL 法律資訊</h3>
+            <p>© 2026 BookSeller's. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="liveToast" class="toast toast-custom align-items-center">
+            <div class="d-flex">
+                <div class="toast-body fs-6 fw-bold"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ Firebase Auth ══ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-LcCfcPYCYAQZ7n45YCe6tCY_jb-ygvI",
+            authDomain: "sonicboom-shop.firebaseapp.com",
+            projectId: "sonicboom-shop",
+            storageBucket: "sonicboom-shop.firebasestorage.app",
+            messagingSenderId: "976804831944",
+            appId: "1:976804831944:web:6ede6a95196478bd49bbfd",
+            measurementId: "G-3FEKWL0QXZ"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        window._auth = auth;
+
+        onAuthStateChanged(auth, (user) => {
+            const userDisplay = document.getElementById('user-display');
+            const btnLogin    = document.getElementById('btn-login');
+            const btnLogout   = document.getElementById('btn-logout');
+            const navOrder    = document.getElementById('nav-order');
+            if (user) {
+                userDisplay.style.display = 'inline-block';
+                userDisplay.innerHTML = `<a href="profile.html" style="color:inherit;text-decoration:none;"><i class="fa-solid fa-user-check me-1"></i>會員 ${user.displayName || user.email.split('@')[0]}</a>`;
+                btnLogin.style.display  = 'none';
+                btnLogout.style.display = 'inline-block';
+                if (navOrder) navOrder.style.display = 'inline-block';
+            } else {
+                alert("請先登入會員以查看購物車！");
+                window.location.href = "login.html";
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            if (confirm("確定要登出嗎？")) {
+                localStorage.removeItem('nike_cart');
+                signOut(auth).then(() => { window.location.href = "index.html"; });
+            }
+        });
+    </script>
+
+    <!-- ══ Cart Logic ══ -->
+    <script>
+        /* ===== 商品資料庫 ===== */
+        const productsDB = {
+            "shoe_casual_01": { name: "解憂雜貨店", price: 320, img: "pic/sandwich/1.jpg" },
+            "shoe_casual_02": { name: "小王子", price: 250, img: "pic/sandwich/2.jpg" },
+            "shoe_casual_03": { name: "追風箏的人", price: 350, img: "pic/sandwich/3.jpg" },
+            "shoe_casual_04": { name: "擺渡人", price: 280, img: "pic/sandwich/4.jpg" },
+            "shoe_sport_01": { name: "房思琪的初戀樂園", price: 330, img: "pic/sandwich/5.jpg" },
+            "shoe_sport_02": { name: "我們仨", price: 260, img: "pic/sandwich/6.jpg" },
+            "shoe_sport_03": { name: "活著", price: 300, img: "pic/sandwich/7.jpg" },
+            "shoe_sport_04": { name: "百年孤寂", price: 420, img: "pic/sandwich/8.jpg" },
+            "shoe_high_01": { name: "人間失格", price: 270, img: "pic/sandwich/9.jpg" },
+            "shoe_high_02": { name: "嫌疑人X的獻身", price: 340, img: "pic/sandwich/10.jpg" },
+            "shoe_high_03": { name: "島上書店", price: 310, img: "pic/sandwich/11.jpg" },
+            "shoe_high_04": { name: "目送", price: 290, img: "pic/sandwich/12.jpg" }
+        };
+
+        /* ===== 計算折扣 ===== */
+        function calcDiscount(subtotal) {
+            if (subtotal >= 2000) return 200;
+            if (subtotal >= 1000) return 100;
+            if (subtotal >= 500)  return 50;
+            return 0;
+        }
+
+        /* ===== 讀取購物車 ===== */
+        function loadCart() {
+            return JSON.parse(localStorage.getItem('nike_cart')) || [];
+        }
+
+        /* ===== 儲存購物車 ===== */
+        function saveCart(cart) {
+            localStorage.setItem('nike_cart', JSON.stringify(cart));
+        }
+
+        /* ===== 渲染購物車 ===== */
+        function renderCart() {
+            const cart        = loadCart();
+            const cartContent = document.getElementById('cart-content');
+            const emptyState  = document.getElementById('empty-state');
+            const tbody       = document.getElementById('cart-tbody');
+
+            if (cart.length === 0) {
+                cartContent.style.display = 'none';
+                emptyState.style.display  = 'block';
+                return;
+            }
+
+            cartContent.style.display = '';
+            emptyState.style.display  = 'none';
+
+            let subtotal = 0;
+            let rows = '';
+
+            cart.forEach((item, index) => {
+                const p = productsDB[item.id];
+                if (!p) return;
+                const itemTotal = p.price * item.qty;
+                subtotal += itemTotal;
+
+                rows += `
+                <tr id="row-${index}">
+                    <td class="prod-name" style="text-align:left; padding-left:18px;">
+                        ${p.name}
+                        ${item.size ? `<br><small class="text-secondary">版本: ${item.size}${item.color ? ' | 書套: '+item.color : ''}</small>` : ''}
+                    </td>
+                    <td>
+                        <img src="${p.img}" alt="${p.name}" class="prod-img">
+                    </td>
+                    <td class="money">NT$ ${p.price.toLocaleString()}</td>
+                    <td>
+                        <div class="d-flex align-items-center justify-content-center gap-1">
+                            <button class="btn btn-sm btn-outline-secondary rounded-0 px-2 py-1" onclick="changeCartQty(${index}, -1)" style="line-height:1; font-weight:bold; width:28px; height:28px;">-</button>
+                            <input type="number" class="qty-input text-center mx-1" id="qty-${index}"
+                                   value="${item.qty}" min="1" max="99" readonly style="width:45px; height:28px; font-size:0.9rem; padding:0; background:#ffffff; border:1px solid #cccccc; color:#333333;">
+                            <button class="btn btn-sm btn-outline-secondary rounded-0 px-2 py-1" onclick="changeCartQty(${index}, 1)" style="line-height:1; font-weight:bold; width:28px; height:28px;">+</button>
+                        </div>
+                    </td>
+                    <td class="money">NT$ ${itemTotal.toLocaleString()}</td>
+                    <td>
+                        <button class="btn03" onclick="removeItem(${index})">刪除</button>
+                    </td>
+                </tr>`;
+            });
+
+            tbody.innerHTML = rows;
+
+            const discount = calcDiscount(subtotal);
+            const finalTotal = subtotal - discount;
+
+            document.getElementById('subtotal-val').innerText = subtotal.toLocaleString();
+            document.getElementById('discount-val').innerText = discount.toLocaleString();
+            document.getElementById('final-total').innerText  = finalTotal.toLocaleString();
+        }
+
+        /* ===== 更新數量（對應 update_cart.php 功能，已優化為即時按鈕）===== */
+        window.changeCartQty = function(index, amount) {
+            const cart = loadCart();
+            if (index >= 0 && index < cart.length) {
+                let newQty = cart[index].qty + amount;
+                if (newQty < 1) newQty = 1;
+                if (newQty > 99) newQty = 99;
+
+                cart[index].qty = newQty;
+                saveCart(cart);
+
+                showToast(`✅ 數量已更新為 ${newQty}`);
+                renderCart();
+            }
+        };
+
+        /* ===== 刪除商品（對應 remove_cart.php 功能）===== */
+        window.removeItem = function(index) {
+            if (!confirm('確定要從購物車移除此商品嗎？')) return;
+            const cart = loadCart();
+            const removed = productsDB[cart[index].id];
+            cart.splice(index, 1);
+            saveCart(cart);
+
+            showToast(`🗑️ 已移除「${removed ? removed.name : '商品'}」`);
+            renderCart();
+        };
+
+        /* ===== 前往結帳 (導向純前端結帳確認頁面) ===== */
+        window.checkout = function() {
+            const cart = loadCart();
+            if (cart.length === 0) {
+                alert('購物車是空的！');
+                return;
+            }
+
+            // 將當前購物車暫存以進行結帳確認
+            localStorage.setItem('nike_checkout_temp', JSON.stringify(cart));
+            showToast('🛒 正在載入結帳資訊...');
+            setTimeout(() => {
+                window.location.href = 'checkout.html';
+            }, 1000);
+        };
+
+        /* ===== Toast ===== */
+        function showToast(message) {
+            const toastEl   = document.getElementById('liveToast');
+            const toastBody = toastEl.querySelector('.toast-body');
+            toastBody.innerHTML = message;
+            const toast = new bootstrap.Toast(toastEl, { delay: 2500 });
+            toast.show();
+        }
+
+        /* ===== 初始渲染 ===== */
+        renderCart();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>操作成功 - BookSeller's</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Inter:wght@300;500;700&family=Noto+Sans+TC:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #eaeef1;
+            --card-bg: #ffffff;
+            --accent-color: #2d7c19;
+            --text-dim: #666666;
+            --tech-red: #d32f2f;
+            --tech-green: #2d7c19;
+            --tech-border: rgba(0, 0, 0, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', 'Noto Sans TC', sans-serif; background: var(--bg-color); color: #333333; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; overflow: hidden; }
+
+        /* 背景漂浮物特效 */
+        .background-pattern { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.1; background-image: radial-gradient(circle at 20% 80%, #2d7c19 0%, transparent 50%), radial-gradient(circle at 80% 20%, #2d7c19 0%, transparent 50%); z-index: 0; }
+        .floating-element { position: absolute; border-radius: 50%; background: rgba(45, 124, 25, 0.06); animation: float 6s ease-in-out infinite; z-index: 0; }
+        .floating-element:nth-child(1) { width: 120px; height: 120px; top: 15%; left: 15%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { width: 80px; height: 80px; top: 65%; right: 10%; animation-delay: 2s; }
+        .floating-element:nth-child(3) { width: 60px; height: 60px; bottom: 20%; left: 25%; animation-delay: 4s; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--tech-border);
+            padding: 50px;
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .professor-box {
+            border: 2px solid var(--accent-color);
+            background: rgba(45, 124, 25, 0.02);
+            padding: 60px 40px;
+            position: relative;
+        }
+        .success-icon {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            color: var(--tech-green);
+            font-size: 80px;
+            padding: 10px;
+        }
+        .msg-title {
+            font-family: 'Lora', serif;
+            color: var(--tech-green);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        .msg-welcome {
+            font-family: 'Lora', serif;
+            color: #555555;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            z-index: 10;
+        }
+        .btn-custom {
+            padding: 15px 35px;
+            font-family: 'Lora', serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: white;
+            background: var(--tech-green);
+            transition: 0.3s;
+            letter-spacing: 1px;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(45,124,25,0.15);
+        }
+        .btn-custom.btn-home {
+            background: #6c757d;
+        }
+        .btn-custom:hover {
+            opacity: 0.9;
+            transform: translateY(-3px);
+            color: white;
+        }
+        .timer-text {
+            margin-top: 40px;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .timer-text span {
+            margin: 0 5px;
+        }
+
+        @media (max-width: 600px) {
+            .glass-card { padding: 25px; }
+            .professor-box { padding: 40px 15px 30px 15px; }
+            .msg-title { font-size: 30px; }
+            .msg-welcome { font-size: 22px; }
+            .btn-group { flex-direction: column; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-pattern"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+
+    <div class="glass-card">
+        <div class="professor-box">
+            <i class="fa-solid fa-circle-check success-icon"></i>
+            
+            <h1 class="msg-title" id="display-title">會員註冊成功</h1>
+            <h2 class="msg-welcome" id="display-welcome">歡迎 <span id="user-name">會員</span> 成為 BookSeller's 一員</h2>
+            
+            <div class="btn-group">
+                <a href="index.html" class="btn-custom btn-home"><i class="fa-solid fa-house"></i> 點選回首頁</a>
+                <a href="login.html" class="btn-custom btn-action" id="action-link"><i class="fa-solid fa-arrow-right-to-bracket"></i> 點選立即登入</a>
+            </div>
+
+            <div class="timer-text">
+                系統將在 <span id="sec">3</span> 秒後自動導向主頁面...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 抓取網址參數
+        const params = new URLSearchParams(window.location.search);
+        const type = params.get('type');
+        const name = params.get('name') || '會員';
+
+        const titleEl = document.getElementById('display-title');
+        const welcomeEl = document.getElementById('display-welcome');
+        const actionLink = document.getElementById('action-link');
+
+        // 根據來源變更顯示內容
+        if (type === 'login') {
+            titleEl.innerText = "登入成功";
+            welcomeEl.innerHTML = `歡迎回來，<span style="color:var(--accent-color);">${name}</span>`;
+            actionLink.innerHTML = `<i class="fa-solid fa-cart-shopping"></i> 前往購物車`;
+            actionLink.href = "cart.html";
+        } else {
+            titleEl.innerText = "會員註冊成功";
+            welcomeEl.innerHTML = `歡迎，<span style="color:var(--accent-color);">${name}</span> 成為會員`;
+            actionLink.innerHTML = `<i class="fa-solid fa-arrow-right-to-bracket"></i> 立即登入`;
+            actionLink.href = "login.html";
+        }
+
+        // 自動跳轉倒數邏輯
+        let count = 3;
+        const secEl = document.getElementById('sec');
+        const timer = setInterval(() => {
+            count--;
+            secEl.innerText = count;
+            if (count <= 0) {
+                clearInterval(timer);
+                window.location.href = "index.html";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
